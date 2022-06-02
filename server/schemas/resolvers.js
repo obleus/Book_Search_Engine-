@@ -7,17 +7,12 @@ const resolvers = {
     me: async (parent, args, context) => {
       if (context.user) {
         const userData = await User.findOne({ _id: context.user._id })
-          .select('-__v -password')
-          .populated('savedBooks');
-          console.log(userData);
-        
-      
-
+          .select('-__v -password');
+        console.log(userData);
         return userData;
       }
 
       throw new AuthenticationError('Not logged in');
-    
     }
   },
 
@@ -46,25 +41,22 @@ const resolvers = {
     },
     saveBook: async (parent, args, context) => {
       if (context.user) {
-        console.log(args);
         const updateUser = await User.findByIdAndUpdate(
           { _id: context.user._id },
           { $push: { savedBooks: args.bookData } },
           { new: true }
         );
-        console.log(updateUser);
-
         return updateUser;
       }
 
       throw new AuthenticationError('You need to be logged in!');
     },
-    removeBook: async (parent, { bookId }, context) => {
+    removeBook: async (parent, args, context) => {
       if (context.user) {
         const updateUser = await User.findOneAndUpdate(
-            { _id: context.user._id },
-            { $pull: { savedBooks: { bookId } } },
-          { new: true, runValidators: true }
+          { _id: context.user._id },
+          { $pull: { savedBooks: { bookId: args.bookId } } },
+          { new: true, runValidators: true, useFindAndModify: false }
         );
 
         return updateUser;
