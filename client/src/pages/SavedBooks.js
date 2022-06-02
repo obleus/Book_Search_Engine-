@@ -12,6 +12,7 @@ const SavedBooks = () => {
   
   const { loading, data } = useQuery(GET_ME);
   const userData = data || {};
+  console.log(userData);
   const [removeBook, { error }] = useMutation(REMOVE_BOOK);
   // use this to determine if `useEffect()` hook needs to run again
   
